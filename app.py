@@ -6,6 +6,10 @@ import signal
 import requests
 from flask_kafka import FlaskKafka
 from kafka import KafkaProducer, KafkaConsumer
+
+from kafka_producer import topics
+
+
 app = Flask(__name__)
 
 ENDPOINT = 'https://newsapi.org/v2/everything?q=tesla&from=2022-11-13&sortBy=publishedAt&apiKey=f1d9f2f51d3c446eadf7353a460be7e6'
@@ -14,7 +18,7 @@ API_KEY = 'f1d9f2f51d3c446eadf7353a460be7e6'
 
 producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
 
-topic = 'my-topic'
+topic = topics
 
 
 def send_message(topic, message):
@@ -56,7 +60,7 @@ def test_topic_handler(msg):
     print("consumed {} from test-topic".format(msg))
 
 @app.route('/bbc')
-def index():
+def bbc():
     newsapi = NewsApiClient(api_key="f1d9f2f51d3c446eadf7353a460be7e6")
     topheadlines = newsapi.get_top_headlines(sources="bbc-news")
 
@@ -77,11 +81,38 @@ def index():
 
     return render_template('index.html', context=mylist)
 
+# Define the Flask route for the news API
+@app.route('/news')
+def get_news():
+    # Set the NewsAPI URL and API key
+    NEWS_API_URL = 'https://newsapi.org/v2/top-headlines'
+    NEWS_API_KEY = 'f1d9f2f51d3c446eadf7353a460be7e6'
+
+    # Get the topic from the request query string
+    # topic = request.args.get('topic')
+    topic = 'technology'
+
+    # Make the HTTP request to the NewsAPI
+    response = requests.get(NEWS_API_URL, params={
+        'q': topic,
+        'apiKey': NEWS_API_KEY
+    })
+
+    # Check the status code of the response
+    if response.status_code == 200:
+        # Parse the response to extract the articles
+        articles = response.json()['articles']
+
+        # Return the articles as a JSON response
+        return articles
+    else:
+        # Return an error message if the request fails
+        return 'Failed to retrieve articles', response.status_code
 
 
 
 @app.route('/')
-def indexes():
+def index():
     # Replace with your search parameters
     params = {
         'api-key': API_KEY,
