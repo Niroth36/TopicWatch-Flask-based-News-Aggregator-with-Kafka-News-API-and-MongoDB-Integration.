@@ -6,11 +6,15 @@ import signal
 import requests
 from flask_kafka import FlaskKafka
 from kafka import KafkaProducer, KafkaConsumer
-
-from kafka_producer import topics
+import pymongo
+from kafka_producer import keywords
 
 
 app = Flask(__name__)
+
+# Connect to the MongoDB database
+client = pymongo.MongoClient('mongodb://localhost:27017/')
+db = client['newsdb']
 
 
 @app.route('/bbc')
@@ -57,6 +61,23 @@ def topic(topic):
 
     return render_template('topic.html', context=mylist)
 
+
+# Set up the Kafka consumer to read from the topics and store the data in the MongoDB database
+@app.route('/store')
+def store_data():
+    # Set up the Kafka consumer
+    consumer = KafkaConsumer()
+
+    # Subscribe to the topics
+    consumer.subscribe(['technology-topic', 'business-topic', 'politics-topic', 'science-topic', 'health-topic', 'sports-topic', 'entertainment-topic', 'environment-topic'])
+
+    # Read the messages and store them in the MongoDB database
+    for message in consumer:
+        # Parse the message value as JSON
+        article = json.loads(message.value)
+
+        # Insert the article into the MongoDB collection for the category
+        db[article['category']].insert_one(article)
 
 if __name__ == "__main__":
     # bus.run()
