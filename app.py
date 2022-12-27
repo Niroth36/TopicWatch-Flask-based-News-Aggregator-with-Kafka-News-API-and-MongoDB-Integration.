@@ -7,18 +7,30 @@ import requests
 from flask_kafka import FlaskKafka
 from kafka import KafkaProducer, KafkaConsumer
 import pymongo
-from kafka_producer import keywords
+# from kafka_producer import keywords
 
 
 app = Flask(__name__)
+
+# Routes
+from user import routes
 
 # Connect to the MongoDB database
 client = pymongo.MongoClient('mongodb://localhost:27017/')
 db = client['newsdb']
 
+@app.route('/')
+def home():
+    return render_template('home.html')
 
-@app.route('/bbc')
-def index():
+
+@app.route('/dashboard/')
+def dashboard():
+    return render_template('dashboard.html')
+
+
+@app.route('/bbc/')
+def bbc():
     newsapi = NewsApiClient(api_key='f1d9f2f51d3c446eadf7353a460be7e6')
     topheadlines = newsapi.get_top_headlines(sources='bbc-news')
 
@@ -37,9 +49,9 @@ def index():
 
     mylist = zip(news, desc, img)
 
-    return render_template('index.html', context=mylist)
+    return render_template('bbc.html', context=mylist)
 
-@app.route('/topic/<topic>')
+@app.route('/topic/<topic>/')
 def topic(topic):
     newsapi = NewsApiClient(api_key='f1d9f2f51d3c446eadf7353a460be7e6')
     everything = newsapi.get_everything(q=topic)
@@ -63,7 +75,7 @@ def topic(topic):
 
 
 # Set up the Kafka consumer to read from the topics and store the data in the MongoDB database
-@app.route('/store')
+@app.route('/store/')
 def store_data():
     # Set up the Kafka consumer
     consumer = KafkaConsumer()
