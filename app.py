@@ -12,12 +12,13 @@ import pymongo
 
 app = Flask(__name__)
 
+# Connect to the MongoDB database
+client = pymongo.MongoClient('localhost', 27017)
+db = client['login_user']
+
 # Routes
 from user import routes
 
-# Connect to the MongoDB database
-client = pymongo.MongoClient('mongodb://localhost:27017/')
-db = client['newsdb']
 
 @app.route('/')
 def home():
