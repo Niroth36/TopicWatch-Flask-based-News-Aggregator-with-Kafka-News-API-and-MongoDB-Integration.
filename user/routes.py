@@ -14,6 +14,14 @@ def signout():
 def delete_user():
     return User().delete_user()
 
+@app.route('/insert_city', methods=['POST'])
+def insert_city():
+    return User().insert_city()
+
+@app.route('/insert_topics', methods=['POST'])
+def insert_topics():
+    return User().insert_topics()
+
 @app.route('/user/login', methods=['POST'])
 def login():
     return User().login()

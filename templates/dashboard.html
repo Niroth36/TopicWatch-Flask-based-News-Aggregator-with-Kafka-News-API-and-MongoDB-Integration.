@@ -40,33 +40,40 @@
 
         <h2>Add your city</h2>
 
-        <form action="/action_page.php">
+        <form action="/insert_city?email={{ session['user']['email'] }}" method="post">
         <label for="cityname">City name:</label><br>
         <input type="text" id="cityname" name="cityname"><br><br>
+        <button type="submit" class="btn btn--secondary">Submit</button>
+        </form>
+        
+    </div>
+
+    <div class="card">
 
         <h2>Choose the topic you are interested in</h2>
 
         <p>You can choose more than one topic.</p>
-       
-        <form action="/action_page.php">
-        <label for="topics">Choose a topic:</label>
-        <select id="topics" name="topics" size="8" multiple>
-            <option value="technology">Technology</option>
-            <option value="business">Business</option>
-            <option value="politics">Politics</option>
-            <option value="science">Science</option>
-            <option value="health">Health</option>
-            <option value="sports">Sports</option>
-            <option value="entertainment">Entertainment</option>
-            <option value="environment">Environment</option>
-        </select><br><br>
-        </form>
 
-        <p>Hold down the Ctrl (windows) / Command (Mac) button to select multiple options.</p>
-        <div class="center">
-            <a href="/" class="btn btn--secondary">Submit</a>
-        </div>
-        </form>
+        <form action="/insert_topics?email={{ session['user']['email'] }}" method="post">
+            <input type="checkbox" id="topic1" name="topics" value="technology">
+            <label for="topic1">Technology</label>
+            <input type="checkbox" id="topic2" name="topics" value="business">
+            <label for="topic2">Business</label>
+            <input type="checkbox" id="topic3" name="topics" value="politics">
+            <label for="topic3">Politics</label>
+            <input type="checkbox" id="topic4" name="topics" value="science">
+            <label for="topic4">Science</label>
+            <input type="checkbox" id="topic5" name="topics" value="health">
+            <label for="topic5">Health</label>
+            <input type="checkbox" id="topic6" name="topics" value="sports">
+            <label for="topic6">Sports</label>
+            <input type="checkbox" id="topic7" name="topics" value="entertainment">
+            <label for="topic7">Entertainment</label>
+            <input type="checkbox" id="topic8" name="topics" value="environment">
+            <label for="topic8">Environment</label>
+            <button type="submit" class="btn btn--secondary">Submit</button>
+        </form> 
+        
     </div>
 </div>
 

@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, session, redirect
+from flask import Flask, jsonify, request, session, redirect, flash
 from passlib.hash import pbkdf2_sha256
 from app import db
 import uuid
@@ -23,7 +23,9 @@ class User:
             "name": request.form.get('name'),
             "email": request.form.get('email'),
             "password": request.form.get('password'),
-            "timestamp": timestamp
+            "timestamp": timestamp,
+            "city_name": "",
+            "keywords": ""
         }
 
         # Encrypt the password
@@ -42,6 +44,33 @@ class User:
     def signout(self):
         session.clear()
         return redirect('/')
+
+    def insert_topics(self):
+        # Get the user data from the request form
+        topics = request.form.getlist('topics')
+        email = request.args.get('email')
+
+        # Update mongoDB
+        db['users'].update_one({'email': email}, {"$set": {'keywords': topics}})
+
+        # Flash a success message
+        flash('Document updated successfully')
+
+        return redirect('/dashboard')
+
+
+    def insert_city(self):
+        # Get the user data from the request form
+        city = request.form['cityname']
+        email = request.args.get('email')
+
+        # Update mongoDB
+        db['users'].update_one({'email': email}, {"$set": {'city_name': city}})
+
+        # Flash a success message
+        flash('Document updated successfully')
+
+        return redirect('/dashboard/')
 
     def delete_user(self):
         # Delete the user from the MongoDB collection
