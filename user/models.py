@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, session, redirect
 from passlib.hash import pbkdf2_sha256
 from app import db
 import uuid
+import datetime
 
 class User:
 
@@ -13,13 +14,16 @@ class User:
 
     def signup(self):
         print(request.form)
+
+        timestamp = datetime.datetime.now()
         
         # Create the user object
         user = {
             "_id": uuid.uuid4().hex,
             "name": request.form.get('name'),
             "email": request.form.get('email'),
-            "password": request.form.get('password')
+            "password": request.form.get('password'),
+            "timestamp": timestamp
         }
 
         # Encrypt the password
@@ -37,6 +41,13 @@ class User:
 
     def signout(self):
         session.clear()
+        return redirect('/')
+
+    def delete_user(self):
+        # Delete the user from the MongoDB collection
+        email = request.args.get('email')
+        db['users'].delete_one({'email': email})
+
         return redirect('/')
 
     def login(self):
