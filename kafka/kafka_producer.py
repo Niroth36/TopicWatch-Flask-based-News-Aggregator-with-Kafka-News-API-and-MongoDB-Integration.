@@ -3,6 +3,7 @@ import requests
 import time
 import subprocess
 import json
+from app import app
 
 # Set the NewsAPI URL and API key
 NEWS_API_URL = 'https://newsapi.org/v2/everything'
@@ -12,7 +13,31 @@ NEWS_API_KEY = 'f1d9f2f51d3c446eadf7353a460be7e6'
 keywords = ['technology', 'business', 'politics', 'science', 'health', 'sports', 'entertainment', 'environment']
 
 # Set up the Kafka producer
-producer = KafkaProducer()
+producer = KafkaProducer(bootstrap_servers='localhost:9092')
+
+@app.route('/get_source_info/<source_domain>')
+def get_source_info(source_domain):
+    # Use the MediaWiki API to search for the source domain
+    api_url = 'https://en.wikipedia.org/w/api.php'
+    params = {
+        'action': 'query',
+        'format': 'json',
+        'list': 'search',
+        'srsearch': source_domain,
+        'utf8': 1,
+        'formatversion': 2,
+        'format': 'json'
+    }
+    r = requests.get(api_url, params=params)
+    data = r.json()
+
+    # Get the description of the first search result
+    description = data['query']['search'][0]['snippet']
+
+    # Publish the description to the Kafka topic with the name of the source domain
+    producer.send(source_domain, value=description.encode())
+
+    return 'Description published to Kafka topic'
 
 # Retrieve and publish articles for each keyword every two hours
 while True:

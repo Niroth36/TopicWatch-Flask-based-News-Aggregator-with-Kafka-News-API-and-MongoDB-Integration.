@@ -44,6 +44,11 @@
         <label for="cityname">City name:</label><br>
         <input type="text" id="cityname" name="cityname"><br><br>
         <button type="submit" class="btn btn--secondary">Submit</button>
+        <br>
+        <p>
+            <strong>Selected topics:</strong> {{ ', '.join(session['user']['keywords']) }}
+        </p>
+
         </form>
         
     </div>
