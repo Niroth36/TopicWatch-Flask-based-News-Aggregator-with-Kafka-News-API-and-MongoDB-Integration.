@@ -48,6 +48,9 @@
         <p>
             <strong>Selected topics:</strong> {{ ', '.join(session['user']['keywords']) }}
         </p>
+        <p>
+            <strong>Your city:</strong> {{ session['user']['city_name'] }}
+        </p>
 
         </form>
         

@@ -16,7 +16,7 @@ app.secret_key = b'\xb0\x97\x10\xd2=\xaf\xf1\xe4}t2s\xe6\x94\x91\xb8'
 
 # Connect to the MongoDB database
 client = pymongo.MongoClient('localhost', 27017)
-db = client['login_user']
+db = client['mongoDB']
 
 # Decorators
 def login_required(f):
@@ -86,23 +86,6 @@ def topic(topic):
 
     return render_template('topic.html', context=mylist)
 
-
-# Set up the Kafka consumer to read from the topics and store the data in the MongoDB database
-@app.route('/store/')
-def store_data():
-    # Set up the Kafka consumer
-    consumer = KafkaConsumer()
-
-    # Subscribe to the topics
-    consumer.subscribe(['technology-topic', 'business-topic', 'politics-topic', 'science-topic', 'health-topic', 'sports-topic', 'entertainment-topic', 'environment-topic'])
-
-    # Read the messages and store them in the MongoDB database
-    for message in consumer:
-        # Parse the message value as JSON
-        article = json.loads(message.value)
-
-        # Insert the article into the MongoDB collection for the category
-        db[article['category']].insert_one(article)
 
 if __name__ == "__main__":
     # bus.run()
