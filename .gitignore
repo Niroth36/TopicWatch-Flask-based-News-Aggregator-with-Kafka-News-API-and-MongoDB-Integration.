@@ -1,4 +1,5 @@
-app_notes.txt
+kafka_producer(tester).py
+kafka_consumer(tester).py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
