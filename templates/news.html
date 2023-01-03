@@ -2,11 +2,21 @@
 
 {% block content %}
 
+<div class="top-left">
+    <a href="/dashboard/" class="btn btn--secondary">Back</a>
+</div>
+
+
 <div class="center">
     <h1>Selected topics: {{ ', '.join(session['user']['keywords']) }}</h1>
-    {% for i in len(session['user']['keywords']) %}
-        <h3>First topic: {{ session['user']['keywords'][i] }}</h3>  
+    {% for keyword in session['user']['keywords'] %}
+        
+        <div class="center">
+            <a href="/{{ keyword }}" class="btn btn--secondary">{{ keyword }}</a>
+        </div>
+       
     {% endfor %}
+
 </div>
 
 {% endblock %}

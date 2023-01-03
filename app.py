@@ -30,6 +30,7 @@ def login_required(f):
 
 # Routes
 from user import routes
+from topics import routes
 
 @app.route('/')
 def home():

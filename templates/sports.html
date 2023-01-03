@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="top-left">
+    <a href="/news" class="btn btn--secondary">Back</a>
+</div>
+
+<div class="center">
+    <h1>Selected topics: {{ ', '.join(session['user']['keywords']) }}</h1>
+           <h1>Topic: Sports</h1>
+                {% for doc in sports_docs %}
+                    <h2>{{ doc['title'] }}</h2>
+                    <p>{{ doc['description'] }}</p>
+                    <p><img src="{{ doc['urlToImage'] }}" alt=""></p>
+                    <br><br><br>
+                {% endfor %}
+</div>
+
+{% endblock %}
