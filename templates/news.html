@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="center">
+    <h1>Selected topics: {{ ', '.join(session['user']['keywords']) }}</h1>
+    {% for i in len(session['user']['keywords']) %}
+        <h3>First topic: {{ session['user']['keywords'][i] }}</h3>  
+    {% endfor %}
+</div>
+
+{% endblock %}

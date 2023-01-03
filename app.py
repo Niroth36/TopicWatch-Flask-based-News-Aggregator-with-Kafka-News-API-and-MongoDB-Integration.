@@ -35,6 +35,9 @@ from user import routes
 def home():
     return render_template('home.html')
 
+@app.route('/news/')
+def news():
+    return render_template('news.html')
 
 @app.route('/dashboard/')
 @login_required

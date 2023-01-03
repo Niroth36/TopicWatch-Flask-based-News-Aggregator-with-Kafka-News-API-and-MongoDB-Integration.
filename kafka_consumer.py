@@ -5,8 +5,9 @@ from app import db
 import subprocess
 
 # Set up the Kafka consumer
-# consumer = KafkaConsumer(bootstrap_servers='localhost:9092',
-                        #  value_deserializer=lambda m: json.loads(m.decode('utf-8')))
+consumer = KafkaConsumer(bootstrap_servers='localhost:9092',
+                         value_deserializer=lambda m: json.loads(m.decode('utf-8')),
+                         consumer_timeout_ms=1000)
 
 bootstrap_server = 'localhost:9092'
 topic = 'technology-topic'
@@ -21,12 +22,13 @@ collection = db['collection']
 # Use the subprocess module to call the kafka-console-consumer.sh script
 consumer = subprocess.Popen(['/home/kafka/kafka/kafka_2.12-3.3.1/bin/kafka-console-consumer.sh',
                                   '--bootstrap-server', bootstrap_server,
-                                  '--topic', topic], 
+                                  '--topic', topic, '--partition', '0','--offset', '0'], 
                                   stdout=subprocess.PIPE)
 
 # Consume the messages
-for line in consumer.stdout:
+for i in range(10):
     # Process the message
+    line = next(consumer.stdout)
     message = line.decode('utf-8').strip()
     print(message)
 
