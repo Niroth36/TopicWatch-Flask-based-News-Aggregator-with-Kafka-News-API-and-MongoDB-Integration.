@@ -43,4 +43,4 @@ def consume_msg(topic):
 while True:
     for topic in topics:
         consume_msg(topic)
-    time.sleep(10)
+    time.sleep(7200)
