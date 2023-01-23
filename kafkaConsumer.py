@@ -35,7 +35,7 @@ def consume_msg(topic):
         if not line:
             break
         data = json.loads(line.decode('utf-8').strip())
-        collection.insert_one(data)
+        collection.replace_one({}, data, upsert=True)
 
     # Close the consumer and the MongoDB connection
     process.kill()
@@ -43,4 +43,4 @@ def consume_msg(topic):
 while True:
     for topic in topics:
         consume_msg(topic)
-    time.sleep(7200)
+    time.sleep(10)

@@ -2,19 +2,43 @@
 
 {% block content %}
 
+<style>
+    p {
+        padding-left: 100px;
+        padding-right: 100px;
+    }
+</style>
+
 <div class="top-left">
     <a href="/news" class="btn btn--secondary">Back</a>
 </div>
 
+<div class="card-wrapper">
+    <div class="card">
+        <h3>
+            Enter article id for recommended articles
+        </h3>
+        <label for="cityname">Article id:</label><br>
+        <input type="text" id="article_id" name="article_id"><br><br>
+        <button type="submit" class="btn btn--secondary">Submit</button>
+    </div>
+
+    <div class="card">
+        <h1>Selected topics: {{ ', '.join(session['user']['keywords']) }}</h1>
+    </div>
+</div>
+
 <div class="center">
-    <h1>Selected topics: {{ ', '.join(session['user']['keywords']) }}</h1>
-           <h1>Topic: Environment</h1>
-                {% for doc in environment_docs %}
-                    <h2>{{ doc['title'] }}</h2>
-                    <p>{{ doc['description'] }}</p>
-                    <p><img src="{{ doc['urlToImage'] }}" alt=""></p>
-                    <br><br><br>
-                {% endfor %}
+    <h1>Topic: Environment</h1>
+
+    {% for doc in environment_docs %}
+        <h2>Article id: {{ doc['_id'] }}</h2>
+        <h2>Url: <a href="{{ doc['url'] }}">{{ doc['url'] }}</a></a></h2>
+        <h2>{{ doc['title'] }}</h2>
+        <p>{{ doc['description'] }}</p>
+        <p><img src="{{ doc['urlToImage'] }}" alt="" width="1500" height="1200"></p>
+        <br><br><br>
+    {% endfor %}
 </div>
 
 {% endblock %}
