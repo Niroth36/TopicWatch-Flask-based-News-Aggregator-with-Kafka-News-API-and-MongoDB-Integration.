@@ -8,8 +8,6 @@ import requests
 from flask_kafka import FlaskKafka
 from kafka import KafkaProducer, KafkaConsumer
 import pymongo
-# from kafka_producer import keywords
-
 
 app = Flask(__name__)
 app.secret_key = b'\xb0\x97\x10\xd2=\xaf\xf1\xe4}t2s\xe6\x94\x91\xb8'
@@ -44,7 +42,6 @@ def news():
 @login_required
 def dashboard():
     return render_template('dashboard.html')
-
 
 @app.route('/bbc/')
 def bbc():

@@ -53,9 +53,6 @@ class User:
         # Update mongoDB
         db['users'].update_one({'email': email}, {"$set": {'keywords': topics}})
 
-        # Flash a success message
-        flash('Document updated successfully')
-
         return redirect('/dashboard')
 
 
@@ -66,9 +63,6 @@ class User:
 
         # Update mongoDB
         db['users'].update_one({'email': email}, {"$set": {'city_name': city}})
-
-        # Flash a success message
-        flash('Document updated successfully')
 
         return redirect('/dashboard/')
 

@@ -1,6 +1,8 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from app import app
 from app import db
+import networkx as nx
+
 
 # Technology-topic
 technology_collection = db['technology-topic']
@@ -89,3 +91,16 @@ environment_docs = environment_collection.find().limit(10)
 def environment():
     environment_docs = environment_collection.find().limit(10)
     return render_template('environment.html', environment_docs=environment_docs)
+
+
+# Build the graph
+G = nx.Graph()  
+
+@app.route('/graph/', methods=['POST'])
+def graph():
+    article_id = request.form['article_id']
+    topic = request.args.get('topic')
+    collection = db[topic+'-topic']
+    article = collection.find_one({"_id": article_id})
+
+    return render_template('graph.html', article=article)
