@@ -1,7 +1,14 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 from app import app
 from app import db
 import networkx as nx
+from bson import ObjectId
+import matplotlib.pyplot as plt
+from graphviz import Digraph
+from networkx.drawing.nx_agraph import graphviz_layout
+from networkx.readwrite import json_graph
+from io import BytesIO
+import base64
 
 
 # Technology-topic
@@ -91,16 +98,34 @@ environment_docs = environment_collection.find().limit(10)
 def environment():
     environment_docs = environment_collection.find().limit(10)
     return render_template('environment.html', environment_docs=environment_docs)
-
-
-# Build the graph
-G = nx.Graph()  
+ 
 
 @app.route('/graph/', methods=['POST'])
 def graph():
     article_id = request.form['article_id']
     topic = request.args.get('topic')
     collection = db[topic+'-topic']
-    article = collection.find_one({"_id": article_id})
+    article = collection.find_one({"_id": ObjectId(article_id)})
 
-    return render_template('graph.html', article=article)
+    # Build the graph
+    G = nx.Graph() 
+
+    # Create a node for the article
+    nodes = G.add_node(article['title'], label=article['title'], title=article['title'],
+             url=article['url'], author=article['author'])
+
+    pos = graphviz_layout(G, prog='neato')
+
+
+    plt.figure(figsize=(8, 6))
+    nx.draw(G, pos, with_labels=True, node_size=2000, node_color="skyblue", alpha=0.5)
+
+
+    img = BytesIO() # file-like object for the image
+    plt.savefig(img) # save the image to the stream
+    img.seek(0) # writing moved the cursor to the end of the file, reset
+    plt.clf() # clear pyplot
+
+    img_data = base64.b64encode(img.getvalue()).decode()
+
+    return render_template('graph.html', img_data=img_data)
