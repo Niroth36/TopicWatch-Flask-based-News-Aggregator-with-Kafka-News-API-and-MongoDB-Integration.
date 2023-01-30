@@ -9,6 +9,8 @@ from networkx.drawing.nx_agraph import graphviz_layout
 from networkx.readwrite import json_graph
 from io import BytesIO
 import base64
+from dateutil.relativedelta import relativedelta
+import datetime
 
 
 # Technology-topic
@@ -114,12 +116,49 @@ def graph():
     nodes = G.add_node(article['title'], label=article['title'], title=article['title'],
              url=article['url'], author=article['author'])
 
-    pos = graphviz_layout(G, prog='neato')
+    # Get all the articles in the same topic
+    articles = list(collection.find())        
+    article_time_diff = {}
+        
+    index = 0
 
+    # Add edges between articles that share the same author or source
+    for art1 in articles:
+        for art2 in articles:
+            if art1['_id'] != art2['_id']:
+                if art1['author'] == art2['author'] or art1['source']['name'] == art2['source']['name']:
+                    if art1['_id'] == ObjectId(article_id) or art2['_id'] == ObjectId(article_id):
+                        G.add_edge(art1['title'], art2['title'])
+                        index += 1
+                else:
+                    date1 = datetime.datetime.strptime(art1['publishedAt'], '%Y-%m-%dT%H:%M:%SZ')
+                    date2 = datetime.datetime.strptime(art2['publishedAt'], '%Y-%m-%dT%H:%M:%SZ')
+                    diff = relativedelta(date1, date2)
+                    if art1['_id'] == ObjectId(article_id):
+                        article_time_diff[art2['title']] = abs(diff.days)
+                    elif art2['_id'] == ObjectId(article_id):
+                        article_time_diff[art1['title']] = abs(diff.days)
+                    
+                        
+    if index == 0:
+        recommended_article = sorted(article_time_diff, key=article_time_diff.get)[0]
+        G.add_edge(article['title'], recommended_article)
+    else:
+        # Calculate the degree centrality of each node in the graph
+        degree_centrality = nx.degree_centrality(G)
+
+        # Sort the degree centrality values in descending order
+        sorted_degree_centrality = dict(sorted(degree_centrality.items(), key=lambda item: item[1], reverse=True))
+
+        # Get the first article from the sorted list of degree centralities
+        recommended_article = list(sorted_degree_centrality.keys())[1]
+
+    pos = graphviz_layout(G, prog='dot')
+
+    # print(article_time_diff)
 
     plt.figure(figsize=(8, 6))
     nx.draw(G, pos, with_labels=True, node_size=2000, node_color="skyblue", alpha=0.5)
-
 
     img = BytesIO() # file-like object for the image
     plt.savefig(img) # save the image to the stream
@@ -128,4 +167,5 @@ def graph():
 
     img_data = base64.b64encode(img.getvalue()).decode()
 
-    return render_template('graph.html', img_data=img_data)
+    return render_template('graph.html', img_data=img_data, recommended_article=recommended_article)
+
