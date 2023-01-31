@@ -30,14 +30,15 @@ def consume_msg(topic):
                             stdout=subprocess.PIPE)
 
     # Continuously read the output of the consumer and insert the data into the MongoDB collection
-    for i in range(10):
+    data = []
+    for i in range(100):
         line = process.stdout.readline()
         if not line:
             break
-        data = json.loads(line.decode('utf-8').strip())
-        collection.replace_one({}, data, upsert=True)
+        data.append(json.loads(line.decode('utf-8').strip()))
 
-    # Close the consumer and the MongoDB connection
+    collection.insert_many(data)
+
     process.kill()
 
 while True:

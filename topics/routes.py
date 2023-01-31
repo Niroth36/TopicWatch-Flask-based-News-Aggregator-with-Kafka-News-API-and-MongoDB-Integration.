@@ -11,7 +11,8 @@ from io import BytesIO
 import base64
 from dateutil.relativedelta import relativedelta
 import datetime
-
+from datetime import datetime, timedelta
+import pandas as pd
 
 # Technology-topic
 technology_collection = db['technology-topic']
@@ -131,8 +132,8 @@ def graph():
                         G.add_edge(art1['title'], art2['title'])
                         index += 1
                 else:
-                    date1 = datetime.datetime.strptime(art1['publishedAt'], '%Y-%m-%dT%H:%M:%SZ')
-                    date2 = datetime.datetime.strptime(art2['publishedAt'], '%Y-%m-%dT%H:%M:%SZ')
+                    date1 = datetime.strptime(art1['publishedAt'], '%Y-%m-%dT%H:%M:%SZ')
+                    date2 = datetime.strptime(art2['publishedAt'], '%Y-%m-%dT%H:%M:%SZ')
                     diff = relativedelta(date1, date2)
                     if art1['_id'] == ObjectId(article_id):
                         article_time_diff[art2['title']] = abs(diff.days)
@@ -152,6 +153,8 @@ def graph():
 
         # Get the first article from the sorted list of degree centralities
         recommended_article = list(sorted_degree_centrality.keys())[1]
+        G.clear()
+        G.add_edge(article['title'], recommended_article)
 
     pos = graphviz_layout(G, prog='dot')
 
@@ -168,4 +171,42 @@ def graph():
     img_data = base64.b64encode(img.getvalue()).decode()
 
     return render_template('graph.html', img_data=img_data, recommended_article=recommended_article)
+
+
+@app.route("/stackedbar")
+def plot_stacked_bar():
+
+    # List of topics
+    topics = ['technology', 'business', 'politics', 'science', 'health', 'sports', 'entertainment', 'environment']
+
+    five_days_ago = datetime.now() - timedelta(days=5)
+
+    topic_counts = {}
+    for topic in topics:
+        collection = db[topic+'-topic']
+        articles = collection.find({'publishedAt': {'$exists': True}})
+        for article in articles:
+            if datetime.strptime(article['publishedAt'], '%Y-%m-%dT%H:%M:%SZ') > five_days_ago:
+                if topic in topic_counts:
+                    topic_counts[topic] += 1
+                else:
+                    topic_counts[topic] = 1
+
+    topics = list(topic_counts.keys())
+    counts = list(topic_counts.values())
+
+    colors = ['red', 'green', 'blue', 'orange', 'purple', 'brown', 'pink', 'gray']
+    fig = plt.figure(figsize=(12, 7))
+    for i, topic in enumerate(topics):
+        plt.bar(topic, counts[i], color=colors[i])
+    plt.xlabel('Topics')
+    plt.ylabel('Number of articles')
+    plt.title('Stacked bar plot of recent articles by topic')
+
+    img = BytesIO()
+    plt.savefig(img, format='png')
+    img.seek(0)
+    img_data = base64.b64encode(img.getvalue()).decode('utf-8')
+    
+    return render_template('stackedbar.html', img_data=img_data)
 

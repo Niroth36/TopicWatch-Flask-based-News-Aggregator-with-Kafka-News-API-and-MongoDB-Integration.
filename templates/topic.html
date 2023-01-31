@@ -15,9 +15,10 @@
     </div>
 
     <div class="container">
-        {% for title, des, i in context %}
+        {% for title, des, url, i in context %}
             <img src="{{ i }}" alt="">
             <h3>Title: </h3> {{ title }}
+            <h4>URL:  </h4><a href="{{ url }}">{{ url }}</a>
             <h4>Description: </h4> {{ des }}
             <br>
             <br>

@@ -74,6 +74,7 @@ def topic(topic):
 
     desc = []
     title = []
+    url = []
     img = []
 
     for i in range(len(articles)):
@@ -81,9 +82,10 @@ def topic(topic):
 
         title.append(myarticles['title'])
         desc.append(myarticles['description'])
+        url.append(myarticles['url'])
         img.append(myarticles['urlToImage'])
 
-    mylist = zip(title, desc, img)
+    mylist = zip(title, desc,url, img)
 
     return render_template('topic.html', context=mylist)
 
