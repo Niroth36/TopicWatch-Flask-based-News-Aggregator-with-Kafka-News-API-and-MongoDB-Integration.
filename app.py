@@ -8,9 +8,29 @@ import requests
 from flask_kafka import FlaskKafka
 from kafka import KafkaProducer, KafkaConsumer
 import pymongo
+from py2neo import Graph, Node
 
 app = Flask(__name__)
 app.secret_key = b'\xb0\x97\x10\xd2=\xaf\xf1\xe4}t2s\xe6\x94\x91\xb8'
+
+# Connect to the Neo4j database
+neo4j = Graph("neo4j://localhost:7687", auth=("neo4j", "3663"))
+
+# Define a function to store a news article in the Neo4j database
+def store_article_in_neo4j(article):
+    # Create a node for the news article
+    node = Node("Article", title=article['title'], description=article['description'], url=article['url'])
+
+    # Add the node to the neo4j database
+    neo4j.create(node)
+
+# Example usage:
+article = {
+    'title': 'Example News Article',
+    'description': 'This is an example news article.',
+    'url': 'http://example.com/article'
+}
+store_article_in_neo4j(article)
 
 # Connect to the MongoDB database
 client = pymongo.MongoClient('localhost', 27017)
