@@ -29,4 +29,4 @@ while True:
     for topic in topics:
         get_and_send_articles(topic)
 
-    time.sleep(7200)  # wait 2 hours before making the next request
+    time.sleep(20)  # wait 2 hours before making the next request
