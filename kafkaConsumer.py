@@ -16,9 +16,6 @@ KafkaConsumer(auto_offset_reset='earliest', enable_auto_commit=False)
 # consume msgpack
 KafkaConsumer(value_deserializer=msgpack.unpackb)
 
-consumer = KafkaConsumer()
-
-topics = ['technology-topic', 'business-topic', 'politics-topic', 'science-topic', 'health-topic', 'sports-topic', 'entertainment-topic', 'environment-topic']
 
 # Neo4j connection settings
 neo4j_uri = "neo4j://localhost:7687"
@@ -27,6 +24,10 @@ neo4j_password = "3663"
 
 # Create the Neo4j driver
 neo4j_driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
+
+consumer = KafkaConsumer()
+
+topics = ['technology-topic', 'business-topic', 'politics-topic', 'science-topic', 'health-topic', 'sports-topic', 'entertainment-topic', 'environment-topic']
 
 def consume_msg(topic):
     collection = db[topic]
@@ -69,4 +70,3 @@ def consume_msg(topic):
 while True:
     for topic in topics:
         consume_msg(topic)
-    time.sleep(20)
