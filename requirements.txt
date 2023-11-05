@@ -42,7 +42,7 @@ parso==0.8.3
 passlib==1.7.4
 pexpect==4.8.0
 pickleshare==0.7.5
-Pillow==9.4.0
+Pillow==10.1.0
 prompt-toolkit==3.0.36
 ptyprocess==0.7.0
 pure-eval==0.2.2
